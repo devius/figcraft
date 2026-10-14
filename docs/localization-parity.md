@@ -29,7 +29,7 @@ supported by both apps (CJK, Arabic and Devanagari shaping, IME); Figma has no v
   and 29 menu wordings by command id: 1,982 entries. Command ids, the CLI, MCP and the control
   channel stay English. Accessibility names come from the same strings.
 - **Language preference:** Preferences ▸ Language (System, English, Deutsch, Español, Español
-  (Latinoamérica), Français, 日本語, 한국어, Português (Brasil), 简体中文), applied at once without a
+  (Latinoamérica), Français, 日本語, 한국어, Português (Brasil), 简体中文, ქართული), applied at once without a
   restart; System takes the first of the OS's preferred languages that has a catalog (Windows'
   language list, macOS AppleLanguages, `LANGUAGE` then the locale variables on Linux and BSD; a regional tag
   falls back to its language, pt-PT or pt to pt-BR, and es-419, es-MX, es-AR, es-CO and the other
@@ -89,6 +89,7 @@ supported by both apps (CJK, Arabic and Devanagari shaping, IME); Figma has no v
 | Japanese | ja | 2,076 / 2,076 (100%, draft) | yes | CJK text and IME in documents; UI text in an installed Japanese face (web: the `FIGCRAFT_EMBED_CJK` build) | no | draft | 1–2 (after native review) |
 | German | de | 2,076 / 2,076 (100%, draft) | yes | Latin; long words elide in narrow fields | no | draft | 1–2 (after native review) |
 | Korean | ko | 2,076 / 2,076 (100%, draft) | yes | Hangul text and IME in documents; UI text in an installed Korean face (web: the `FIGCRAFT_EMBED_CJK` build) | no | draft | 1–2 (after native review) |
+| Georgian | ka | every entry Spanish has (100%, draft) | yes | Mkhedruli has no case; UI text in an installed Georgian face (web: none, so it is left out of the picker) | no | draft | 1–2 (after native review) |
 | Vietnamese | vi | 0 (0%) | no | Latin with stacked diacritics | no | none | 3–5 |
 
 Other languages: none shipped (Figma ships none beyond the eight above).

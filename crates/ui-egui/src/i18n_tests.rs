@@ -375,6 +375,22 @@ fn japanese_korean_and_chinese_have_no_plural_forms() {
 }
 
 #[test]
+fn georgian_is_a_draft_with_count_neutral_plurals() {
+    let code = |pref: &str, system: Option<&str>| LANGS[resolve(pref, system)].code;
+    for tag in ["ka", "ka-GE", "ka_GE.UTF-8"] {
+        assert_eq!(code("system", Some(tag)), "ka", "{tag}");
+    }
+    let ka = LANGS.iter().position(|l| l.code == "ka").unwrap();
+    assert!(LANGS[ka].draft && LANGS[ka].name == "ქართული");
+    // A noun stays singular after a numeral: both forms read the same where English counts in both.
+    for (k, t) in LANGS[ka].ui {
+        if let (Text::Plural(Some(one), other), Some(Text::Plural(Some(en_one), _))) = (t, find(english().ui, k)) {
+            assert!(!en_one.contains("{n}") || one == other, "ka: {k:?}");
+        }
+    }
+}
+
+#[test]
 fn chinese_reads_simplified_and_traditional_has_no_catalog() {
     let code = |pref: &str, system: Option<&str>| LANGS[resolve(pref, system)].code;
     for tag in ["zh-CN", "zh_CN.UTF-8", "zh-SG", "zh-Hans", "zh-Hans-CN", "zh-Hans-HK", "zh"] {

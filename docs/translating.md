@@ -14,7 +14,7 @@ Simplified.
 
 The catalogs: English (`en`, the source), and Spanish (`es`, with the Latin American overlay
 `es-419`), French (`fr`), German (`de`), Brazilian Portuguese (`pt-BR`), Japanese (`ja`), Korean (`ko`)
-and Simplified Chinese (`zh-Hans`), machine-drafted and waiting for native speakers' review.
+Simplified Chinese (`zh-Hans`) and Georgian (`ka`), machine-drafted and waiting for native speakers' review.
 
 ## The catalogs
 
@@ -43,14 +43,17 @@ Enter for the key, control for a gamepad, resorte) and keeps Spanish's tú. Japa
 concise, without です/ます endings, with full-width （）「」：、。 where Japanese UI text has them;
 Korean labels end without 합니다 (instructions in -세요). Simplified Chinese is concise, with
 full-width （）：，、。“” in Chinese text and a space between Chinese and Latin words or numbers.
-None of the three has plural forms.
+None of the three has plural forms. Georgian has no letter case and keeps a noun singular after a
+numeral, so counts read "შრე: {n}" and its plural entries give the same text for `one` and `other`.
 
 CJK text needs a CJK font, which egui and Inter lack: the desktop app adds an installed one when
 something on screen needs it (see `crates/ui-egui/src/cjk.rs`). The web build has no system fonts,
 so Japanese, Korean and Chinese appear there only in a build with craft-fonts and
 `FIGCRAFT_EMBED_CJK=1` (Noto Sans CJK SC, +16 MB); otherwise they are left out of the picker. A
-Chinese UI puts its Chinese face first so Han takes Simplified Chinese shapes. A new CJK or other non-Latin
-language also needs its script in `cjk::language`.
+Chinese UI puts its Chinese face first so Han takes Simplified Chinese shapes. Georgian needs a Georgian face the
+same way (Segoe UI or Sylfaen on Windows, Noto Sans Georgian or DejaVu Sans elsewhere); the web build
+has none, so it leaves Georgian out of the picker. A new CJK or other non-Latin language also needs
+its script in `cjk::language`.
 
 ## Adding a language
 
