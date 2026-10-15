@@ -18,6 +18,12 @@ pub fn start() {
             log::error!("missing <canvas id=\"{CANVAS_ID}\">");
             return;
         };
+        // A script face the site serves beside the page (the Georgian preview: fonts/NotoSansGeorgian.ttf),
+        // added before the first frame so the language picker offers Georgian and it draws: the web
+        // build has no system fonts. Without the file nothing changes.
+        if let Some(bytes) = fetch_font("fonts/NotoSansGeorgian.ttf").await {
+            figcraft_text::fontdb::db().write().unwrap_or_else(std::sync::PoisonError::into_inner).add_bytes(bytes);
+        }
         let mut options = eframe::WebOptions::default();
         // `?webgl`: force the WebGL2 backend (troubleshooting, and headless browsers whose WebGPU
         // adapter request returns nothing).
@@ -107,4 +113,16 @@ impl Services for WebServices {
         }
         held
     }
+}
+
+/// A font file from the site, or `None` (missing, or a host answering with its index page).
+async fn fetch_font(url: &str) -> Option<Vec<u8>> {
+    let window = web_sys::window()?;
+    let resp: web_sys::Response = wasm_bindgen_futures::JsFuture::from(window.fetch_with_str(url)).await.ok()?.dyn_into().ok()?;
+    if !resp.ok() {
+        return None;
+    }
+    let buf = wasm_bindgen_futures::JsFuture::from(resp.array_buffer().ok()?).await.ok()?;
+    let bytes = js_sys::Uint8Array::new(&buf).to_vec();
+    matches!(bytes.get(..4), Some([0, 1, 0, 0] | b"OTTO" | b"true")).then_some(bytes)
 }

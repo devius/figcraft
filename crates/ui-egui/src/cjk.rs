@@ -82,7 +82,7 @@ pub fn can_show(code: &str) -> bool {
     let need = language(code);
     need == 0
         || !cfg!(target_arch = "wasm32")
-        || samples(need, 0).iter().all(|(c, _)| figcraft_text::face_with_char(*c, &["BIZ UDPGothic", "Noto Sans CJK SC"]).is_some())
+        || samples(need, 0).iter().all(|(c, families)| figcraft_text::face_with_char(*c, families).is_some())
 }
 
 /// A character standing for each script in `need`, with the families to look for it in, the UI
