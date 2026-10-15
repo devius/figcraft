@@ -80,9 +80,7 @@ pub fn language(code: &str) -> u8 {
 /// picker and the system language skip a language it can't.
 pub fn can_show(code: &str) -> bool {
     let need = language(code);
-    need == 0
-        || !cfg!(target_arch = "wasm32")
-        || samples(need, 0).iter().all(|(c, families)| figcraft_text::face_with_char(*c, families).is_some())
+    need == 0 || !cfg!(target_arch = "wasm32") || samples(need, 0).iter().all(|(c, families)| figcraft_text::face_with_char(*c, families).is_some())
 }
 
 /// A character standing for each script in `need`, with the families to look for it in, the UI
