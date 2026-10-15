@@ -869,6 +869,8 @@ impl FigApp {
     pub fn logic(&mut self, ctx: &egui::Context) {
         if self.language.as_ref() != Some(&self.session.prefs.language) {
             i18n::set(&self.session.prefs.language, self.services.system_language().as_deref());
+            // New files and pages are named in the interface language (Excel-style "Book1").
+            self.session.set_default_names(i18n::tr("Untitled"), i18n::tr("Page"));
             self.language = Some(self.session.prefs.language.clone());
         }
         if !self.fonts_installed {

@@ -27,8 +27,9 @@ pub fn specs() -> Vec<CommandSpec> {
     vec![
         spec!("page.add", "Add page", "{name?} (a name starting with a hyphen adds a divider)", true, |s, p| {
             let background = s.new_page_background();
+            let word = s.default_names().1;
             let doc = s.doc_mut()?;
-            let name = string(p, "name").unwrap_or_else(|| format!("Page {}", doc.pages.len() + 1));
+            let name = string(p, "name").unwrap_or_else(|| format!("{word} {}", doc.pages.len() + 1));
             let id = doc.add_page(&name);
             if let NodeKind::Page { background: b, .. } = &mut doc.get_mut(id)?.kind {
                 *b = background;

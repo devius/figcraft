@@ -208,8 +208,13 @@ impl Default for Document {
 impl Document {
     /// A new file with one empty page ("Page 1").
     pub fn new(name: impl Into<String>) -> Self {
+        Self::with_first_page(name, "Page 1")
+    }
+
+    /// A new file with one empty page named `page` (the interface language's "Page 1").
+    pub fn with_first_page(name: impl Into<String>, page: &str) -> Self {
         let mut doc = Self::without_pages(name);
-        let p = doc.add_page("Page 1");
+        let p = doc.add_page(page);
         doc.current_page = Some(p);
         doc
     }

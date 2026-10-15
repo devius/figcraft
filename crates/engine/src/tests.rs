@@ -532,3 +532,24 @@ fn guides_add_move_remove() {
     s.execute("guide.clear", &json!({})).unwrap();
     assert!(guides(&s).is_empty());
 }
+
+#[test]
+fn new_files_and_pages_take_the_interface_default_names() {
+    let mut s = sess();
+    assert_eq!(s.doc().unwrap().name, "Untitled");
+    // The untouched start-up file is renamed when the interface turns out to be Georgian.
+    s.set_default_names("უსათაურო", "გვერდი");
+    assert_eq!(s.docs.len(), 1);
+    let d = s.doc().unwrap();
+    assert_eq!(d.name, "უსათაურო");
+    assert_eq!(d.get(d.pages[0]).unwrap().name, "გვერდი 1");
+    s.execute("page.add", &json!({})).unwrap();
+    let d = s.doc().unwrap();
+    assert_eq!(d.get(d.pages[1]).unwrap().name, "გვერდი 2");
+    // A file with changes keeps its names; new files take the current words.
+    s.set_default_names("Untitled", "Page");
+    assert_eq!(s.doc().unwrap().name, "უსათაურო");
+    s.execute("file.new", &json!({})).unwrap();
+    let d = s.doc().unwrap();
+    assert_eq!((d.name.as_str(), d.get(d.pages[0]).unwrap().name.as_str()), ("Untitled", "Page 1"));
+}

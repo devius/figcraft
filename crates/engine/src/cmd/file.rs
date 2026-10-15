@@ -14,8 +14,9 @@ use crate::{DocState, EngineError, Result, Session, bad, spec};
 pub fn specs() -> Vec<CommandSpec> {
     vec![
         spec!("file.new", "New design file", "{name?}", false, |s, p| {
-            let name = string(p, "name").unwrap_or_else(|| "Untitled".into());
-            let mut doc = Document::new(name);
+            let (untitled, page) = s.default_names();
+            let name = string(p, "name").unwrap_or(untitled);
+            let mut doc = Document::with_first_page(name, &format!("{page} 1"));
             // A property of the page from here on: a later change of theme leaves it alone.
             let background = s.new_page_background();
             for page in doc.pages.clone() {

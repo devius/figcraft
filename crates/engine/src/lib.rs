@@ -545,6 +545,11 @@ impl DocState {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Prefs {
+    /// The words new files and pages are named with ("Untitled", "Page" → "Page 1"), set by the
+    /// interface from its language's catalog, so a new file is named in the interface language.
+    /// Not saved: the interface keeps its own language preference.
+    #[serde(skip)]
+    pub default_names: (String, String),
     pub nudge_small: f64,
     pub nudge_big: f64,
     pub keep_tool: bool,
@@ -604,6 +609,7 @@ pub struct Prefs {
 impl Default for Prefs {
     fn default() -> Self {
         Self {
+            default_names: ("Untitled".into(), "Page".into()),
             nudge_small: 1.0,
             nudge_big: 10.0,
             keep_tool: false,
@@ -693,6 +699,30 @@ impl Default for Session {
 }
 
 impl Session {
+    /// The words new files and pages are named with ([`Prefs::default_names`]; English when unset).
+    pub fn default_names(&self) -> (String, String) {
+        let (file, page) = &self.prefs.default_names;
+        let or = |w: &String, en: &str| if w.trim().is_empty() { en.to_string() } else { w.clone() };
+        (or(file, "Untitled"), or(page, "Page"))
+    }
+
+    /// Sets [`Prefs::default_names`] (the interface passes its language's words). The untouched new
+    /// file the app starts with is replaced by one with the new names.
+    pub fn set_default_names(&mut self, file: &str, page: &str) {
+        if file.trim().is_empty() || page.trim().is_empty() || self.prefs.default_names == (file.to_string(), page.to_string()) {
+            return;
+        }
+        let old = self.default_names();
+        self.prefs.default_names = (file.to_string(), page.to_string());
+        if let [d] = self.docs.as_slice()
+            && d.path.is_none()
+            && Arc::ptr_eq(&d.doc, &d.saved_doc)
+            && d.doc.name == old.0
+        {
+            self.docs[0] = DocState::new(Document::with_first_page(file, &format!("{page} 1")), None);
+        }
+    }
+
     /// A session with one new document.
     pub fn new() -> Self {
         let mut s = Self::empty();
