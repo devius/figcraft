@@ -137,7 +137,7 @@ mod tests {
         assert_eq!(language("fr"), 0);
         assert_eq!(scripts("შრე 1"), GEORGIAN);
         assert_eq!(language("ka"), GEORGIAN);
-        assert!(["en", "es", "es-419", "fr", "de", "pt-BR"].iter().all(|c| can_show(c)));
+        assert!(["en", "es", "es-419", "fr", "de", "pt-BR", "tr", "id"].iter().all(|c| can_show(c)));
     }
 
     #[test]
