@@ -1,5 +1,4 @@
-//! Chinese, Japanese, Korean and Georgian text in the UI. egui's own fonts and Inter have no CJK
-//! (or Georgian) glyphs, so
+//! Chinese, Japanese and Korean text in the UI. egui's own fonts and Inter have no CJK glyphs, so
 //! the UI adds a face per script it needs: the UI language's, the scripts in the open file's names
 //! and comments, the language picker's and typed text. Desktop finds them among the installed
 //! fonts (the system font scan), only once one is needed, so English users load none; the web
@@ -13,10 +12,6 @@ pub const KANA: u8 = 1;
 pub const HANGUL: u8 = 2;
 /// Han characters (and CJK punctuation and full-width forms).
 pub const HAN: u8 = 4;
-/// Georgian (Mkhedruli, Mtavruli, Asomtavruli and Nuskhuri). Not CJK, but found the same way.
-pub const GEORGIAN: u8 = 8;
-/// Every script here: nothing is left to look up once each has a face.
-pub const ALL: u8 = KANA | HANGUL | HAN | GEORGIAN;
 
 /// Japanese faces, the built-in one first: Windows, macOS, then Linux names.
 const JAPANESE: &[&str] = &[
@@ -50,8 +45,6 @@ const CHINESE: &[&str] = &[
     "WenQuanYi Zen Hei",
     "Droid Sans Fallback",
 ];
-/// Georgian faces: Windows, macOS, then Linux names.
-const GEORGIAN_FACES: &[&str] = &["Segoe UI", "Sylfaen", "Noto Sans Georgian", "Helvetica Neue", "Arial Unicode MS", "DejaVu Sans", "FreeSans"];
 
 /// The CJK scripts in `s`.
 pub fn scripts(s: &str) -> u8 {
@@ -60,7 +53,6 @@ pub fn scripts(s: &str) -> u8 {
             0x3040..=0x30FF | 0x31F0..=0x31FF | 0xFF66..=0xFF9F => KANA,
             0x1100..=0x11FF | 0x3130..=0x318F | 0xA960..=0xA97F | 0xAC00..=0xD7FF | 0xFFA0..=0xFFDC => HANGUL,
             0x3000..=0x303F | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF | 0xFF01..=0xFF65 | 0x20000..=0x3FFFF => HAN,
-            0x10A0..=0x10FF | 0x1C90..=0x1CBF | 0x2D00..=0x2D2F => GEORGIAN,
             _ => 0,
         }
     })
@@ -72,7 +64,6 @@ pub fn language(code: &str) -> u8 {
         Some("ja") => KANA | HAN,
         Some("ko") => HANGUL,
         Some("zh") => HAN,
-        Some("ka") => GEORGIAN,
         _ => 0,
     }
 }
@@ -82,7 +73,9 @@ pub fn language(code: &str) -> u8 {
 /// picker and the system language skip a language it can't.
 pub fn can_show(code: &str) -> bool {
     let need = language(code);
-    need == 0 || !cfg!(target_arch = "wasm32") || samples(need, 0).iter().all(|(c, families)| figcraft_text::face_with_char(*c, families).is_some())
+    need == 0
+        || !cfg!(target_arch = "wasm32")
+        || samples(need, 0).iter().all(|(c, _)| figcraft_text::face_with_char(*c, &["BIZ UDPGothic", "Noto Sans CJK SC"]).is_some())
 }
 
 /// A character standing for each script in `need`, with the families to look for it in, the UI
@@ -96,7 +89,7 @@ fn samples(need: u8, ui: u8) -> Vec<(char, Vec<&'static str>)> {
         (false, HANGUL) => ('漢', [KOREAN, JAPANESE, CHINESE].concat()),
         (false, _) => ('漢', [JAPANESE, KOREAN, CHINESE].concat()),
     };
-    let mut v = vec![(KANA, ('あ', JAPANESE.to_vec())), (HAN, han), (HANGUL, ('한', KOREAN.to_vec())), (GEORGIAN, ('ა', GEORGIAN_FACES.to_vec()))];
+    let mut v = vec![(KANA, ('あ', JAPANESE.to_vec())), (HAN, han), (HANGUL, ('한', KOREAN.to_vec()))];
     match ui {
         HANGUL => v.reverse(),
         HAN => v.swap(0, 1),
@@ -137,8 +130,6 @@ mod tests {
         assert_eq!(language("zh-Hant"), HAN);
         assert_eq!(language("zh-Hans"), HAN);
         assert_eq!(language("fr"), 0);
-        assert_eq!(scripts("შრე 1"), GEORGIAN);
-        assert_eq!(language("ka"), GEORGIAN);
         assert!(["en", "es", "es-419", "fr", "de", "pt-BR", "tr", "id"].iter().all(|c| can_show(c)));
     }
 

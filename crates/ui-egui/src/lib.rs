@@ -1185,7 +1185,7 @@ impl FigApp {
     /// typed text's, and those in the open file's names and comments (read when it changes, not
     /// mid-drag). Nothing is checked once every script has a face.
     fn cjk_needed(&mut self, ctx: &egui::Context, installed: u8) -> u8 {
-        if installed == cjk::ALL {
+        if installed == cjk::KANA | cjk::HANGUL | cjk::HAN {
             return installed;
         }
         let mut need = i18n::current().map_or(0, |l| cjk::language(l.code));
@@ -1235,10 +1235,9 @@ impl FigApp {
             ctx.options_mut(|o| o.zoom_with_keyboard = false);
             theme::install_fonts(ctx, false, 0);
             self.fonts_installed = true;
-        } else if figcraft_text::system_fonts_scanned() || cfg!(target_arch = "wasm32") {
-            // Once the system fonts are indexed (the web has none to scan: its built-in and
-            // site-served faces are there from the start): faces for names in scripts the UI fonts
-            // lack, and for each CJK script once something shows it.
+        } else if figcraft_text::system_fonts_scanned() {
+            // Once the system fonts are indexed: faces for names in scripts the UI fonts lack, and
+            // for each CJK script once something shows it.
             let installed = self.script_fonts.map_or(0, |(s, _)| s);
             let cjk = installed | self.cjk_needed(ctx, installed);
             // The UI language's script leads the CJK faces, so another language lays them out again.
