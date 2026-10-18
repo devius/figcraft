@@ -380,6 +380,7 @@ fn design(app: &mut FigApp, ui: &mut Ui) {
     widgets::separator(ui);
     effects(app, ui, &doc, &sel);
     widgets::separator(ui);
+    crate::selection_colors::section(app, ui, &doc, &sel);
     if sel.iter().all(|i| doc.node(*i).is_some_and(|n| n.kind.is_frame_like())) {
         grids(app, ui, &doc, &sel);
         widgets::separator(ui);
@@ -656,7 +657,7 @@ fn position_fields(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId]
     });
     widgets::sublabels(ui, tr("Rotation"), None);
     row(ui, 32.0, |ui| {
-        let e = widgets::number_field_mixed(ui, Id::new("pos_rot"), Lead::Icon(Icon::CornerRadius, tr("Rotation")), rot, "°", col, 1.0);
+        let e = widgets::number_field_mixed(ui, Id::new("pos_rot"), Lead::Icon(Icon::Angle, tr("Rotation")), rot, "°", col, 1.0);
         app.field_of(&ids, "rotation", e, rot_of, |v| json!(v));
         let items = [
             (Icon::Rotate, tr("Rotate 90° right")),
@@ -1101,7 +1102,12 @@ fn paints(app: &mut FigApp, ui: &mut Ui, doc: &Document, sel: &[NodeId], fills: 
         empty,
     ) {
         if i == 1 {
-            app.run(if fills { "fill.add" } else { "stroke.add" }, json!({"ids": ids}));
+            // The new paint goes on top; open its picker. A mixed selection has no one index to edit.
+            if app.run(if fills { "fill.add" } else { "stroke.add" }, json!({"ids": ids})).is_some()
+                && let Some(l) = &list
+            {
+                app.ui.picker = Some(crate::colorpicker::PickerTarget::Paint { fills, index: l.len(), ids: ids.clone() });
+            }
         } else {
             style_picker::open(app, ui, &ids, slot);
         }
