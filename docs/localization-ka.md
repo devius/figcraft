@@ -1,6 +1,6 @@
 # FigCraft in Georgian
 
-> **Last reviewed:** 2026-10-18 · **Last updated:** 2026-10-18 · **Change:** minor (catalog complete again after the upstream merge: .fig import notes, selection colors, paste design layers) · **Target:** Figma Design (desktop app 126.10.7)
+> **Last reviewed:** 2026-10-18 · **Last updated:** 2026-10-19 · **Change:** patch (catalog complete again after the upstream merge: missing fonts, home-screen search; previously minor: .fig import notes, selection colors, paste design layers) · **Target:** Figma Design (desktop app 126.10.7)
 
 Choose **Preferences ▸ Language ▸ ქართული**. The interface switches at once and the choice is saved
 with the other preferences. With **System**, FigCraft reads Georgian when the first of the OS's
@@ -8,8 +8,8 @@ preferred languages is Georgian (`ka`, `ka-GE`, `ka_GE.UTF-8`). `pref.language {
 selects it from the CLI, MCP and the control channel. New files and pages are named in the interface
 language (`უსათაურო`, `გვერდი 1`).
 
-`crates/ui-egui/locales/ka.toml` translates every key of `en.toml` (1,719 UI strings), every command
-label (566) and every menu wording (31): menus, panels, the Actions palette, the shortcuts panel,
+`crates/ui-egui/locales/ka.toml` translates every key of `en.toml` (1,731 UI strings), every command
+label (567) and every menu wording (31): menus, panels, the Actions palette, the shortcuts panel,
 dialogs, tooltips, toasts, the home screen and templates. Command ids, CLI/MCP/control-channel output,
 file names and the names you give layers, styles and variables stay as they are. The catalog was
 written from the meaning of the English labels; no proprietary translation resources were consulted.
