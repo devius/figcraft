@@ -15,14 +15,12 @@ Simplified.
 `pref.language {language}` does the same from the CLI, MCP and the control channel.
 
 The catalogs: English (`en`, the source), and Spanish (`es`, with the Latin American overlay
-`es-419`), French (`fr`), German (`de`), Brazilian Portuguese (`pt-BR`), Japanese (`ja`), Korean (`ko`),
-Simplified Chinese (`zh-Hans`), Czech (`cs`) and Indonesian (`id`), machine-drafted and waiting for
-native speakers' review. Russian (`ru`, Русский) was reviewed and approved by VanTan; its catalog
-keeps Frame, Dev Mode and Smart animate as familiar tool names and uses « » quotes. Turkish (`tr`)
-was machine-drafted and reviewed by a native speaker.
-`es-419`), French (`fr`), German (`de`), Brazilian Portuguese (`pt-BR`), Japanese (`ja`), Korean (`ko`)
-Simplified Chinese (`zh-Hans`) and Georgian (`ka`), machine-drafted and waiting for native speakers' review, and
-Swedish (`sv`), which translates every UI string, command label and menu wording.
+`es-419`), French (`fr`), German (`de`), Dutch (`nl`), Brazilian Portuguese (`pt-BR`), Japanese
+(`ja`), Korean (`ko`), Simplified Chinese (`zh-Hans`), Czech (`cs`), Indonesian (`id`), Finnish
+(`fi`) and Georgian (`ka`), machine-drafted and waiting for native speakers' review. Russian (`ru`, Русский) was
+reviewed and approved by VanTan; its catalog keeps Frame, Dev Mode and Smart animate as familiar
+tool names and uses « » quotes. Turkish (`tr`) was machine-drafted and reviewed by a native speaker,
+and Swedish (`sv`) translates every UI string, command label and menu wording.
 
 ## The catalogs
 
@@ -59,17 +57,18 @@ komponenta, instance, varianta, automatické rozvržení, omezení, výplň, tah
 proměnná, styl). Indonesian uses bare imperatives for buttons and menu items (Simpan, Hapus), the
 formal Anda (never kamu), keeps established design terms in English (frame, layer, component,
 instance, auto layout, plugin, file) and keeps a noun unchanged after a count, so its plural entries
-give only `other`. Georgian has no letter case and keeps a noun singular after a
-numeral, so counts read "შრე: {n}" and its plural entries give the same text for `one` and `other`.
+give only `other`. Georgian has no letter case (never write Mtavruli for capitals), uses verbal nouns
+for commands (გვერდის დამატება) and keeps a noun singular after a numeral, so counts read
+"შრე: {n}" and its plural entries give the same text for `one` and `other`.
 
 CJK text needs a CJK font, which egui and Inter lack: the desktop app adds an installed one when
 something on screen needs it (see `crates/ui-egui/src/cjk.rs`). The web build has no system fonts,
 so Japanese, Korean and Chinese appear there only in a build with craft-fonts and
 `FIGCRAFT_EMBED_CJK=1` (Noto Sans CJK SC, +16 MB); otherwise they are left out of the picker. A
-Chinese UI puts its Chinese face first so Han takes Simplified Chinese shapes. Georgian needs a Georgian face the
-same way (Segoe UI or Sylfaen on Windows, Noto Sans Georgian or DejaVu Sans elsewhere); the web build
-has none, so it leaves Georgian out of the picker. A new CJK or other non-Latin language also needs
-its script in `cjk::language`.
+Chinese UI puts its Chinese face first so Han takes Simplified Chinese shapes. Georgian is drawn in
+craft-fonts' Noto Sans Georgian, one of the built-in faces in `theme::install_fonts` (and kept in
+web builds by `crates/text/build.rs`). A new CJK or other non-Latin language also needs its script in
+`cjk::language`, or a built-in craft-fonts face.
 
 ## Adding a language
 
@@ -89,8 +88,8 @@ its script in `cjk::language`.
 4. To require full coverage, add the code to `COMPLETE` in
    [`crates/ui-egui/src/i18n_tests.rs`](../crates/ui-egui/src/i18n_tests.rs). Every later PR that
    adds a string then has to translate it into each complete language, so only Spanish is there:
-   French, German, Brazilian Portuguese, Japanese, Korean, Simplified Chinese, Czech and Indonesian
-   are registered as drafts, Russian and Turkish are reviewed but not required, and a string added
+   French, German, Brazilian Portuguese, Japanese, Korean, Simplified Chinese, Czech, Indonesian and
+   Georgian are registered as drafts, Russian and Turkish are reviewed but not required, and a string added
    later shows English in them until it is translated. To list what a draft lacks,
    add its code to `COMPLETE` locally and run the check.
 5. Run the check and look at the panels in the app (longer words must fit the right panel):
