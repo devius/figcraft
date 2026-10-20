@@ -135,6 +135,7 @@ fn dynamic_labels() -> Vec<&'static str> {
     v.extend(Group::ALL.iter().map(|g| g.label()));
     v.extend(GESTURES.iter().flat_map(|(_, label, mac, other)| [*label, *mac, *other]));
     v.extend(DATA_LABELS);
+    v.push(figcraft_engine::live::TOO_LARGE_TO_JOIN);
     // The starter templates' names, descriptions and kinds.
     v.extend(figcraft_engine::templates::TEMPLATES.iter().flat_map(|t| [t.name, t.description, t.kind.label()]));
     v
@@ -328,6 +329,14 @@ fn lookups_fall_back_to_english_and_fill_placeholders() {
 }
 
 #[test]
+fn a_live_failure_the_ui_knows_is_read_back_for_translation() {
+    use figcraft_engine::live::TOO_LARGE_TO_JOIN;
+    let reason = TOO_LARGE_TO_JOIN.replace("{mb}", "1024");
+    assert!(matches!(crate::live::failure_text(&reason), std::borrow::Cow::Owned(t) if t == reason));
+    assert!(matches!(crate::live::failure_text("Couldn't reach the server"), std::borrow::Cow::Borrowed(_)));
+}
+
+#[test]
 fn system_languages_pick_the_first_one_with_a_catalog() {
     let code = |pref: &str, system: Option<&str>| LANGS[resolve(pref, system)].code;
     assert_eq!(code("system", Some("fr-CA")), "fr");
@@ -400,7 +409,7 @@ fn french_and_portuguese_count_zero_as_singular() {
     for code in ["fr", "pt-BR"] {
         assert!(one(code, 0) && one(code, 1) && !one(code, 2), "{code}");
     }
-    for code in ["en", "es", "de", "cs"] {
+    for code in ["en", "es", "de", "cs", "pl"] {
         for n in [0, 1, 2, 3, 4, 5, 21] {
             assert_eq!(one(code, n), n == 1, "{code}: {n}");
         }
@@ -435,6 +444,25 @@ fn georgian_is_a_draft_with_count_neutral_plurals() {
             assert!(!en_one.contains("{n}") || one == other, "ka: {k:?}");
         }
     }
+}
+
+/// Release builds embed craft-fonts' Noto Sans Georgian (`theme::install_fonts`' built-in faces),
+/// since Inter and egui's fonts have no Georgian: it draws every Georgian letter the catalog uses.
+#[test]
+fn the_built_in_georgian_face_draws_the_georgian_catalog() {
+    let Some(face) = figcraft_text::find_face("Noto Sans Georgian", "Regular").filter(|f| f.family == "Noto Sans Georgian") else {
+        eprintln!("built without craft-fonts' Noto Sans Georgian; skipping");
+        return;
+    };
+    let ka = &LANGS[LANGS.iter().position(|l| l.code == "ka").unwrap()];
+    let georgian = |c: &char| matches!(u32::from(*c), 0x10A0..=0x10FF | 0x1C90..=0x1CBF | 0x2D00..=0x2D2F);
+    let mut letters: BTreeSet<char> = BTreeSet::new();
+    for (_, t) in ka.ui.iter().chain(ka.commands).chain(ka.menu) {
+        letters.extend(forms(t).into_iter().flat_map(str::chars).filter(georgian));
+    }
+    assert!(letters.len() > 30, "{letters:?}");
+    let missing: String = letters.iter().filter(|c| !face.has_char(**c)).collect();
+    assert!(missing.is_empty(), "no glyph for {missing:?}");
 }
 
 #[test]
@@ -505,6 +533,27 @@ fn russian_language_tags_and_integer_plurals() {
     for (key, text) in LANGS[ru].ui {
         if let Text::Plural { one, few, many, .. } = text {
             assert!(one.is_some() && few.is_some() && many.is_some(), "{key}: missing Russian plural forms");
+        }
+    }
+}
+
+#[test]
+fn polish_integer_plurals() {
+    let pl = LANGS.iter().position(|l| l.code == "pl").unwrap();
+    assert_eq!(LANGS[pl].name, "Polski");
+    assert_eq!(plural("pl", 1), Plural::One);
+    assert_eq!(fill(counted(pl, "{n} layers", 1), &[("n", &1)]), "1 warstwa");
+    for n in [2, 3, 4, 22, 23, 24, 102, 104, 1_002] {
+        assert_eq!(plural("pl", n), Plural::Few, "{n}");
+        assert_eq!(fill(counted(pl, "{n} layers", n), &[("n", &n)]), format!("{n} warstwy"));
+    }
+    for n in [0, 5, 10, 11, 12, 13, 14, 19, 20, 21, 25, 31, 100, 101, 111, 112, 114, 1_000_000] {
+        assert_eq!(plural("pl", n), Plural::Many, "{n}");
+        assert_eq!(fill(counted(pl, "{n} layers", n), &[("n", &n)]), format!("{n} warstw"));
+    }
+    for (key, text) in LANGS[pl].ui {
+        if let Text::Plural { one, few, many, .. } = text {
+            assert!(one.is_some() && few.is_some() && many.is_some(), "{key}: missing Polish plural forms");
         }
     }
 }
