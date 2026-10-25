@@ -101,10 +101,10 @@ builds with `CRAFT_FONTS_DIR` and `CRAFT_FONTS_REQUIRED=1`, so releases embed it
 rather than ship without them. The browser has no system fonts, so a web build without craft-fonts
 can't draw text.
 `crates/text/build.rs` reads both `fonts/manifest.txt` and `fonts/latin-manifest.txt`, so the pin
-must be a commit that has the Latin manifest (today `4391305`, on craft-fonts'
-`pr/latin-presentation-fonts` branch; re-pin to `main` once that lands). That commit has no
-Noto Sans Georgian (craft-fonts' main has it but no Latin manifest), so desktop Georgian uses an
-installed font; re-pin when one commit has both (craft-fonts#42). The web build embeds only Inter,
+must be a commit that has the Latin manifest (today `76ba5a0`, on craft-fonts'
+`pr/latin-presentation-fonts` branch; re-pin to `main` once that lands). Since craft-fonts#42 that
+branch also has Noto Sans Georgian, so releases embed it: the web build lists and draws Georgian,
+and desktop Georgian no longer depends on an installed font. The web build embeds only Inter,
 Noto Sans Georgian and the Archivo SemiBold wordmark, when the pin has them. Packages carry each embedded font's licence as `OFL-<family>.txt`
 (`copy_font_licences` in `packaging/env.sh`; `Contents/Resources/Licenses` in the macOS app).
 
