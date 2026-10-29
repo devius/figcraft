@@ -19,6 +19,14 @@ The server lives in `crates/mcp` (`figcraft-mcp`) and is started by the CLI:
 
 `--attach` also takes `host:port`. The control channel only listens on 127.0.0.1.
 
+While an attached agent works, the app shows where, as it shows a person in a live session: its
+avatar, in a colour of its own and named as its comments are signed ("Claude (agent)", see
+Comments), joins the people row at the top of the right panel, and the canvas outlines the layers
+its last edit changed, or that it last selected, with its name. Both go 8 seconds after its last
+command, and only the file it works in shows them. This is display only: no undo step, nothing
+saved, nothing sent to a live session's other people, and nothing changes in what the agent may
+do.
+
 Attached calls are never automatically replayed after a transport failure: the app may have
 applied the request before its reply was lost. The error reports that the operation may have
 completed; inspect the document before retrying an edit. The next explicit call reconnects.
@@ -1328,7 +1336,8 @@ joined file opens as a new document).
 
 Sessions are per document: every open document has its own session or none, and several run at
 once (host one document, join another, publish a third). They keep syncing while another document
-is active; there your presence is empty (no cursor, selection or view). The `collab.*` commands
+is active; there your presence is empty (no cursor, selection or view). An attached agent's own
+presence in the app (above) is never part of a live session's presence. The `collab.*` commands
 and `collab.peers` are about the **active document's** session (`doc.switch {index}` changes which
 one that is), and `sessions` in `collab.peers` lists them all. Closing a document ends its session
 only: a host stops hosting it, a guest leaves it.
@@ -1377,7 +1386,8 @@ only: a host stops hosting it, a guest leaves it.
   session, a revoked link, an unreachable host, a `wss://` server whose certificate isn't trusted:
   see `FIGCRAFT_CA_FILE` in [`server.md`](server.md#behind-a-reverse-proxy-tls)). `collab.leave {}`
   leaves the active document's session (or ends a join started from it that is still on its way
-  or failed); the synced document stays open as your copy.
+  or failed), and `collab.leave {session}` the session with that id (from `sessions`), whichever
+  document is active; the synced document stays open as your copy.
 - `collab.publish {server, name?, key?}` puts the active document on a `figcraft-server`
   ([`server.md`](server.md)) and syncs it from there (as that document's session; others go on): `server` is the address
   `figcraft-server key` prints (`ws://host:47900/?key=…`; or give `key` separately), `name` the

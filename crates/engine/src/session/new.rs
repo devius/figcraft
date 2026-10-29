@@ -55,6 +55,7 @@ impl Session {
             events: Arc::new(events::EventLog::default()),
             pending_events: Vec::new(),
             agent: None,
+            agent_presence: None,
         }
     }
 

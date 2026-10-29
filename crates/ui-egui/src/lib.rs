@@ -79,6 +79,8 @@ mod dev_mode_tests;
 #[cfg(test)]
 mod devmode_tail_tests;
 #[cfg(test)]
+mod display_name_tests;
+#[cfg(test)]
 mod duplicate_paint_tests;
 #[cfg(test)]
 mod export_preview_tests;
@@ -94,6 +96,8 @@ mod gap_handle_tests;
 mod gradient_shorthand_tests;
 #[cfg(test)]
 mod guide_release_tests;
+#[cfg(test)]
+mod guide_snap_tests;
 #[cfg(test)]
 mod home_recents_tests;
 #[cfg(test)]
@@ -120,6 +124,8 @@ mod live_chat_tests;
 mod live_docs_tests;
 #[cfg(test)]
 mod live_join_tests;
+#[cfg(test)]
+mod live_joining_tests;
 #[cfg(test)]
 mod live_server_tests;
 #[cfg(test)]
@@ -345,6 +351,8 @@ pub struct UiState {
     /// small window draws).
     pub left_width: f32,
     pub right_width: f32,
+    /// The right sidebar as drawn this frame, after fitting the window.
+    pub right_panel_rect: Option<egui::Rect>,
     pub right_tab: RightTab,
     /// The tab of the previous frame, to see the right panel change mode.
     pub last_right_tab: RightTab,
@@ -422,6 +430,8 @@ pub struct UiState {
     /// The control that opened the picker, refreshed every frame it is drawn (the panel scrolls):
     /// a press in it is held out of the popover's closing, so its own click toggles the picker.
     pub picker_button: Option<egui::Rect>,
+    /// The opening widget, so only that control refreshes the held rectangle as it moves.
+    pub picker_button_id: Option<egui::Id>,
     pub context_menu: Option<(egui::Pos2, Vec<NodeId>)>,
     /// The context menu was asked for from the keyboard (`view.contextMenu`): it opens at the
     /// focused layer row or the canvas selection and takes the keyboard.
@@ -558,6 +568,7 @@ impl Default for UiState {
         Self {
             left_width: PANEL_DEFAULT,
             right_width: PANEL_DEFAULT,
+            right_panel_rect: None,
             right_tab: RightTab::Design,
             last_right_tab: RightTab::Design,
             left_tab: LeftTab::File,
@@ -603,6 +614,7 @@ impl Default for UiState {
             crop: None,
             picker_popover: None,
             picker_button: None,
+            picker_button_id: None,
             context_menu: None,
             key_menu: false,
             key_box: None,
