@@ -33,10 +33,13 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use figcraft_doc::*;
+use figcraft_doc::{
+    ChildLayout, ContentAlign, CrossAlign, DocError, Document, MainAlign, Node, NodeId, NodeKind, PropDef, Sizing, TextAutoResize, TextData,
+};
 use figcraft_geom::Affine;
 use serde_json::Value;
 
+mod cycles;
 mod diff;
 mod guard;
 mod instances;
@@ -45,6 +48,9 @@ mod rebase;
 mod sync;
 mod variants;
 
+pub use cycles::{
+    break_component_cycles, check_component_cycles, component_cycle, contains_itself_error, cycle_text, new_cycle, would_contain_itself,
+};
 pub use diff::{diff_groups, property_owners, set_boolean_default, variable_groups};
 pub use guard::{check_override_edit, check_structure_edit, refused_override, unlink_layers};
 pub(crate) use instances::copy_group;

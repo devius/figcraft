@@ -1,4 +1,4 @@
-use super::*;
+use super::{Arc, Clipboard, DocState, Document, Prefs, Session, background, cmd, events, library, live, plugins, tools};
 
 impl Session {
     /// The words new files and pages are named with ([`Prefs::default_names`]; English when unset).
@@ -52,6 +52,9 @@ impl Session {
             plugins: plugins::Runtime::default(),
             live: live::Lives::default(),
             background: background::Background::default(),
+            events: Arc::new(events::EventLog::default()),
+            pending_events: Vec::new(),
+            agent: None,
         }
     }
 
