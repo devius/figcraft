@@ -2605,6 +2605,10 @@ status = "draft — reviewed by a native speaker, awaiting a maintainer's approv
 "font.downloads" = "შრიფტების ჩამოტვირთვები"
 "image.crop" = "გამოსახულების ჩამოჭრა"
 "library.check" = "გუნდის ბიბლიოთეკების განახლებების შემოწმება"
+"board.reshape" = "შემაერთებლის ფორმის შეცვლა"
+"image.replace" = "გამოსახულების ჩანაცვლება"
+"variable.extendCollection" = "კოლექციის გაფართოება"
+"widget.hover" = "ვიჯეტზე მაჩვენებლის მიტანა"
 
 [menu]
 "bool.exclude" = "გამორიცხვა"
