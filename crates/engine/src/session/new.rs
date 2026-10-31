@@ -39,6 +39,7 @@ impl Session {
             active: 0,
             clipboard: Clipboard::default(),
             prefs: Prefs::default(),
+            prefs_unsaved: false,
             tool: tools::ToolState::default(),
             ui_requests: Vec::new(),
             ui_dark: None,

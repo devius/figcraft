@@ -34,6 +34,7 @@ pub mod credits;
 pub mod import_report;
 pub mod missing_fonts;
 pub mod plugins_ui;
+pub mod sampled_color;
 pub mod updates_ui;
 pub mod variables_panel;
 
@@ -209,6 +210,7 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
     crate::pending_open::pending_opens(app, ctx);
     crate::import_report::show(app, ctx);
     crate::missing_fonts::show(app, ctx);
+    crate::sampled_color::show(app, ctx);
     let t = Tokens::get(ctx);
     if app.ui.about {
         let mut open = true;
@@ -238,6 +240,7 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
                 (tr("Rename duplicated layers"), prefs.rename_duplicates, "pref.renameDuplicates"),
                 (tr("Show dimensions on objects"), prefs.show_dimensions, "pref.showDimensions"),
                 (tr("Use number keys for opacity"), prefs.number_keys_opacity, "pref.numberKeysOpacity"),
+                (tr("Scroll wheel zoom"), prefs.scroll_wheel_zoom, "pref.scrollWheelZoom"),
                 (tr("Reduce motion"), prefs.reduce_motion, "pref.reduceMotion"),
             ] {
                 if crate::widgets::checkbox(ui, val, label) {
